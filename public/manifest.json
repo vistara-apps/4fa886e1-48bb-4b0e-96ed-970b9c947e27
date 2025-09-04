@@ -1,0 +1,14 @@
+{
+  "name": "AdRemix",
+  "description": "AdRemix is a Base Mini App built with Zara.",
+  "image": "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=OG",
+  "external_url": "https://4fa886e1-48bb-4b0e-96ed-970b9c947e27.vistara.dev",
+  "properties": {
+    "app": {
+      "name": "AdRemix",
+      "description": "AdRemix is a Base Mini App built with Zara.",
+      "url": "https://4fa886e1-48bb-4b0e-96ed-970b9c947e27.vistara.dev",
+      "icon": "https://0co.to/images/zara-2.png"
+    }
+  }
+}
