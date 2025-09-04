@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY,
-  baseURL: "https://openrouter.ai/api/v1",
-  dangerouslyAllowBrowser: true,
-});
-
 export async function POST(request: NextRequest) {
   try {
     const { productImageUrl, platform } = await request.json();
@@ -18,8 +12,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Initialize OpenAI client
+    const apiKey = process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'OpenAI API key not configured' },
+        { status: 500 }
+      );
+    }
+
+    const openai = new OpenAI({
+      apiKey,
+      baseURL: "https://openrouter.ai/api/v1",
+      dangerouslyAllowBrowser: true,
+    });
+
     // Platform-specific prompts
-    const platformPrompts = {
+    const platformPrompts: Record<string, { tone: string; format: string; cta: string }> = {
       tiktok: {
         tone: 'energetic, trendy, Gen-Z friendly',
         format: 'short, punchy, with trending hashtags',
@@ -31,6 +40,14 @@ export async function POST(request: NextRequest) {
         cta: 'engaging and community-building'
       }
     };
+
+    // Validate platform
+    if (!platformPrompts[platform]) {
+      return NextResponse.json(
+        { error: 'Invalid platform. Must be tiktok or instagram' },
+        { status: 400 }
+      );
+    }
 
     const prompt = `Generate 4 different ad variations for a product image for ${platform}. 
     The tone should be ${platformPrompts[platform].tone}.
@@ -85,7 +102,7 @@ export async function POST(request: NextRequest) {
     console.error('Error generating ads:', error);
     
     // Return fallback variations on error
-    const fallbackVariations = generateFallbackVariations(platform);
+    const fallbackVariations = generateFallbackVariations('tiktok'); // Default to tiktok
     return NextResponse.json({ variations: fallbackVariations });
   }
 }
